@@ -15,8 +15,11 @@
  
  */
 
-#import <Foundation/Foundation.h>
+#import "BaseState.h"
 
-@interface RSSReader : NSObject <NSXMLParserDelegate>
+@interface TimeState : BaseState
+
+-(void)processIncomingData:(unsigned char *) data length:(int) length;
++(TimeState *)getTimeState;
 
 @end

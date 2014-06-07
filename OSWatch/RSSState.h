@@ -15,8 +15,13 @@
  
  */
 
-#import <Foundation/Foundation.h>
+#import "BaseState.h"
+#import "BLEConnectionDelegate.h"
 
-@interface RSSReader : NSObject <NSXMLParserDelegate>
+@interface RSSState : BaseState
+
+-(void)processIncomingData:(unsigned char *) data length:(int) length;
+-(BLEConnectionDelegate*) getBLEDelegate;
++(RSSState *)getRSSState;
 
 @end

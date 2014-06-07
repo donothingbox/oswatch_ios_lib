@@ -20,6 +20,8 @@
 #import "ConnectionViewController.h"
 #import "AppDelegate.h"
 #import "RSSParserObject.h"
+#import "TimeState.h"
+#import "RSSState.h"
 
 @implementation BLEConnectionDelegate
 @synthesize m_detectedDevices;
@@ -45,13 +47,15 @@ static NSMutableArray *packetArray;
 static NSInteger packetCount;
 static NSInteger rssCount;
 
+TimeState *m_timeState;
+
 
 
 -(BLEConnectionDelegate *)init{
     NSLog(@"BLEConnectionDelegate->init");
     self =[super init];
     rssParserObject = [[RSSParserObject alloc] init];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(rssLoadComplete:) name:EVENT_RSS_LOAD_COMPLETE object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(rssLoadComplete:) name:EVENT_RSS_LOAD_COMPLETE object:nil];
 
     return self;
 }
@@ -149,92 +153,46 @@ static NSInteger rssCount;
     for (NSUInteger i = 0; i < lengthByte; i++) {
         [byteArray addObject:[NSNumber numberWithUnsignedChar:data[i]]];
     }
-
     NSDictionary *theInfo = [NSDictionary dictionaryWithObjectsAndKeys:byteArray,@"messageData", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_DEVICE_SENT_DATA object:self userInfo:theInfo];
     
     // Below should probably be re-written. The State Events should also go to an eventual Mobile State Delegate, or something similar
     //
     //
-    NSLog(@"Length: %d", data[0]);
+    //NSLog(@"Length: %d", data[0]);
     // parse data as needed
     for (int i = 0; i < data[0]; i+=data[0]){
         //debug trace
         unsigned char data_test[] = { data[i+3], data[i+4], data[i+5], data[i+6] };
-        NSLog(@"0x%02X, timestamp:%d, 0x%02X", data[i], [self bytesToInteger:data_test], data[i+7]);
-        NSLog(@"App Id: %d", data[BYTE_EVENT_APP_ID]);
-        
+        //NSLog(@"0x%02X, timestamp:%d, 0x%02X", data[i], [self bytesToInteger:data_test], data[i+7]);
+        //NSLog(@"App Id: %d", data[BYTE_EVENT_APP_ID]);
         [[UIApplication sharedApplication] cancelAllLocalNotifications];
 
-        if(data[BYTE_EVENT_APP_ID] == GLOBAL_STATE)
+        switch (data[BYTE_EVENT_APP_ID])
         {
-            //Parse global Events here. This is a reserved App ID. Currently None Setup
-            NSLog(@"MASTER STATE EVENT DETECTED");
-        }
-        else if(data[BYTE_EVENT_APP_ID] == MENU_STATE){
-            NSLog(@"PING STATE EVENT DETECTED");
-            [self scheduleNotification:@"Incoming Data: PING" soundName:@"cardiac_arrest.wav"];
-            [self sendMessage:SLAVE_PING_RESPONSE];
-            //[self registerDrinkEvent];
-            //[self registerDrinkEvent: [self bytesToInteger:data_test]];
-        }
-        
-        else if (data[BYTE_EVENT_APP_ID] == TIME_STATE){
-            NSLog(@"TIME STATE EVENT DETECTED");
-            
-            [self scheduleNotification:@"Time Request: PING" soundName:@"cardiac_arrest.wav"];
-            [self sendMessage:SLAVE_TIME_RESPONSE];
-
-        }
-        else if (data[BYTE_EVENT_APP_ID] == RSS_STATE){
-            
-            if(data[BYTE_EVENT_APP_ACTION] == RSS_APP_ACTION_LOAD_METADATA){
-                NSLog(@"RSS LOAD RSS DETECTED");
-                [rssParserObject loadRSS];
-            }
-            
-                
-            else if(data[BYTE_EVENT_APP_ACTION] == RSS_APP_ACTION_LOAD_BLOCK){
-                NSLog(@"RSS LOAD BLOCK DETECTED: %d", data[3]);
-
-                NSMutableArray *feeds = [rssParserObject getFeeds];
-                [self sendRSSFeedLine:(NSString *)[feeds[[self byteToInteger:&data[3]]] objectForKey:@"title"]];
-                //[self sendRequestedPacket:[self byteToInteger:&data[3]]];
-            }
-
-            
-            
-            else if(data[BYTE_EVENT_APP_ACTION] == RSS_APP_ACTION_LOAD_PACKET){
-                
-                NSLog(@"RSS LOAD PACKET DETECTED: %d", data[3]);
-
-                [self sendRequestedPacket:[self byteToInteger:&data[3]]];
-
-                
-                
-            }
-
-
-            else
-            {
-            
-            
-            
-                [self sendFormattedString:0x03 stateAction:0x00 stateMessage:@"THis is a test"];
-            }
-            
-        }
-        else{
-            [self scheduleNotification:@"Incoming Data: UNKNOWN" soundName:@"cardiac_arrest.wav"];
+            case GLOBAL_STATE:
+                //Parse global Events here. This is a reserved App ID. Currently None Setup
+                NSLog(@"MASTER STATE EVENT DETECTED");
+                break;
+            case MENU_STATE:
+                //Currently, no Class to forward to, so handle it locally
+                NSLog(@"PING STATE EVENT DETECTED");
+                [self scheduleNotification:@"Incoming Data: PING" soundName:@"cardiac_arrest.wav"];
+                [self sendMessage:SLAVE_PING_RESPONSE];
+                break;
+            case TIME_STATE:
+                [[TimeState getTimeState] processIncomingData:data length:length];
+                break;
+            case RSS_STATE:
+                [[RSSState getRSSState] processIncomingData:data length:length];
+                break;
+            default:
+                //This is an Error and should never happen
+                [self scheduleNotification:@"Incoming Data: UNKNOWN" soundName:@"cardiac_arrest.wav"];
+                break;
         }
     }
 }
-
-/*
--(void) connectionTimer:(NSTimer *)timer {
-
-}*/
-
 
 -(void) readRSSITimer:(NSTimer *)timer{
     [self readRSSI];
@@ -375,7 +333,7 @@ static NSInteger rssCount;
 
 
 
-
+/*
 - (void) rssLoadComplete:(NSNotification*)notification {
     NSLog(@"RSS Load Event Complete, ship it!");
     rssCount = 10; //set manually for now
@@ -385,10 +343,6 @@ static NSInteger rssCount;
     
     
 }
-
-
-
-
 
 
 -(IBAction)sendRequestedPacket:(NSInteger)packetID{
@@ -514,7 +468,7 @@ static NSInteger rssCount;
     [self write:dataObj];
 }
 
-
+*/
 
 
 

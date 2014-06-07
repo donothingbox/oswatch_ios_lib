@@ -57,6 +57,9 @@
 		DCAFB99A1901DC01008B5A27 /* PairedDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB9991901DC01008B5A27 /* PairedDevice.m */; };
 		DCAFB9E11901EBAA008B5A27 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB9E01901EBAA008B5A27 /* FirstViewController.m */; };
 		DCB0B1E1191BFA4B00BD749C /* OSWatchWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB0B1DF191BFA4B00BD749C /* OSWatchWebViewController.m */; };
+		DCBAB6D31942D1830042E2AA /* BaseState.m in Sources */ = {isa = PBXBuildFile; fileRef = DCBAB6D21942D1830042E2AA /* BaseState.m */; };
+		DCBAB6D61942D1970042E2AA /* TimeState.m in Sources */ = {isa = PBXBuildFile; fileRef = DCBAB6D51942D1970042E2AA /* TimeState.m */; };
+		DCBAB6D91942DE910042E2AA /* RSSState.m in Sources */ = {isa = PBXBuildFile; fileRef = DCBAB6D81942DE910042E2AA /* RSSState.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -133,6 +136,12 @@
 		DCAFB9E01901EBAA008B5A27 /* FirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
 		DCB0B1DE191BFA4B00BD749C /* OSWatchWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSWatchWebViewController.h; sourceTree = SOURCE_ROOT; };
 		DCB0B1DF191BFA4B00BD749C /* OSWatchWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OSWatchWebViewController.m; sourceTree = SOURCE_ROOT; };
+		DCBAB6D11942D1830042E2AA /* BaseState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseState.h; sourceTree = "<group>"; };
+		DCBAB6D21942D1830042E2AA /* BaseState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseState.m; sourceTree = "<group>"; };
+		DCBAB6D41942D1970042E2AA /* TimeState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeState.h; sourceTree = "<group>"; };
+		DCBAB6D51942D1970042E2AA /* TimeState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimeState.m; sourceTree = "<group>"; };
+		DCBAB6D71942DE910042E2AA /* RSSState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSState.h; sourceTree = "<group>"; };
+		DCBAB6D81942DE910042E2AA /* RSSState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSState.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -221,6 +230,7 @@
 		DCAFB94F1901D4F5008B5A27 /* OSWatch */ = {
 			isa = PBXGroup;
 			children = (
+				DCBAB6C41942CF3D0042E2AA /* WatchApplications */,
 				DCB0B1DE191BFA4B00BD749C /* OSWatchWebViewController.h */,
 				DCB0B1DF191BFA4B00BD749C /* OSWatchWebViewController.m */,
 				DC470D2F191BF22700257514 /* Default-568h@2x.png */,
@@ -291,6 +301,19 @@
 				DCAFB9881901D9BD008B5A27 /* ble_select_btn.png */,
 			);
 			name = assets;
+			sourceTree = "<group>";
+		};
+		DCBAB6C41942CF3D0042E2AA /* WatchApplications */ = {
+			isa = PBXGroup;
+			children = (
+				DCBAB6D11942D1830042E2AA /* BaseState.h */,
+				DCBAB6D21942D1830042E2AA /* BaseState.m */,
+				DCBAB6D41942D1970042E2AA /* TimeState.h */,
+				DCBAB6D51942D1970042E2AA /* TimeState.m */,
+				DCBAB6D71942DE910042E2AA /* RSSState.h */,
+				DCBAB6D81942DE910042E2AA /* RSSState.m */,
+			);
+			name = WatchApplications;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -429,8 +452,11 @@
 				DCAFB95A1901D4F5008B5A27 /* AppDelegate.m in Sources */,
 				DCAFB9E11901EBAA008B5A27 /* FirstViewController.m in Sources */,
 				DCB0B1E1191BFA4B00BD749C /* OSWatchWebViewController.m in Sources */,
+				DCBAB6D61942D1970042E2AA /* TimeState.m in Sources */,
 				DC98705C1942881700B8390C /* RSSParserObject.m in Sources */,
+				DCBAB6D91942DE910042E2AA /* RSSState.m in Sources */,
 				DCAFB9601901D4F5008B5A27 /* ConnectionViewController.m in Sources */,
+				DCBAB6D31942D1830042E2AA /* BaseState.m in Sources */,
 				DC095316191DF9B500DEDE7A /* RSSReader.m in Sources */,
 				DCAFB9971901DA04008B5A27 /* BLEConnectionDelegate.m in Sources */,
 				DCAFB99A1901DC01008B5A27 /* PairedDevice.m in Sources */,

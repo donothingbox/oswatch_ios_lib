@@ -24,6 +24,7 @@
 
 //TODO move these to a "Defines" file
 
+
 #define EVENT_DEVICE_SCAN_STARTED     @"deviceScanStartedNotification"
 #define EVENT_DEVICE_SCAN_COMPLETE    @"deviceScanCompleteNotification"
 #define EVENT_NO_DEVICES_FOUND        @"noDevicesFoundOnScanNotification"
@@ -70,8 +71,6 @@
 #define RSS_APP_ACTION_LOAD_METADATA  1
 #define RSS_APP_ACTION_LOAD_BLOCK  2
 #define RSS_APP_ACTION_LOAD_PACKET  3
-
-
 
 
 //Outgoing
@@ -122,6 +121,13 @@
 -(NSString *)stringWithUrl:(NSURL *)url;
 - (IBAction) sendData:(UInt8*) buf;
 - (IBAction) sendString;
+
+-(int) byteToInteger:(Byte *) byte;
+-(IBAction)sendRequestedPacket:(NSInteger)packetID;
+-(IBAction)sendRSSFeedLine:(NSString*)mySentence;
+
+-(Byte *) integerToBytes:(int) int_to_convert;
+-(Byte *) integerToByte:(int) int_to_convert;
 
 
 -(CBPeripheral *) getActivePeripheral;
