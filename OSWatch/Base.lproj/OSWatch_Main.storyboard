@@ -48,6 +48,25 @@
             </objects>
             <point key="canvasLocation" x="588" y="-491"/>
         </scene>
+        <!--Watch Web View Controller - Web-->
+        <scene sceneID="l2k-pz-SAz">
+            <objects>
+                <viewController id="oEF-jg-QpU" customClass="OSWatchWebViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="dku-3c-SAz"/>
+                        <viewControllerLayoutGuide type="bottom" id="zED-uB-GlC"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Wmk-3B-aRg">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Web" image="AppIcon29x29.png" id="boc-mx-Xe7"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IzK-vC-dnc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="132" y="879"/>
+        </scene>
         <!--Second View Controller - Second-->
         <scene sceneID="ot8-2e-RuS">
             <objects>
@@ -99,6 +118,25 @@
             </objects>
             <point key="canvasLocation" x="653" y="498"/>
         </scene>
+        <!--Debug View Controller - Debug-->
+        <scene sceneID="Lga-3r-e3w">
+            <objects>
+                <viewController id="yhU-ya-q6g" customClass="DebugViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="UFB-XP-BtV"/>
+                        <viewControllerLayoutGuide type="bottom" id="6fg-tE-aDV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Fk4-MR-FdZ">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Debug" id="xK2-jX-bQ0"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QKp-nc-WrG" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="515" y="1127"/>
+        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Vex-rW-GRa">
             <objects>
@@ -114,6 +152,8 @@
                         <segue destination="QUy-BD-bpt" kind="relationship" relationship="viewControllers" id="WCl-0W-1Xz"/>
                         <segue destination="4Ai-p2-Twu" kind="relationship" relationship="viewControllers" id="uX3-Xa-txq"/>
                         <segue destination="pm2-Tq-m8N" kind="relationship" relationship="viewControllers" id="khs-18-tQl"/>
+                        <segue destination="oEF-jg-QpU" kind="relationship" relationship="viewControllers" id="2I1-T7-ghs"/>
+                        <segue destination="yhU-ya-q6g" kind="relationship" relationship="viewControllers" id="2VA-FS-muP"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FNP-y4-bzi" sceneMemberID="firstResponder"/>
@@ -449,6 +489,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="AppIcon29x29.png" width="29" height="29"/>
         <image name="first" width="30" height="30"/>
         <image name="second" width="30" height="30"/>
         <image name="settings_icon" width="30" height="30"/>

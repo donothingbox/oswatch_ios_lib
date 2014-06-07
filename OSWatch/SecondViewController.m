@@ -17,7 +17,16 @@
 
 #import "SecondViewController.h"
 
-@interface SecondViewController ()
+@interface SecondViewController () {
+    NSXMLParser *parser;
+    NSMutableArray *feeds;
+    NSMutableDictionary *item;
+    NSMutableString *title;
+    NSMutableString *link;
+    NSString *element;
+    
+    
+}
 
 @end
 
@@ -26,7 +35,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
 }
 
 - (void)didReceiveMemoryWarning

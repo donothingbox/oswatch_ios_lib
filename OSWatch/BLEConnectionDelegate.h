@@ -63,9 +63,19 @@
 #define GLOBAL_STATE  0
 #define MENU_STATE  1
 #define TIME_STATE  2
+#define RSS_STATE  3
+
+//
+
+#define RSS_APP_ACTION_LOAD_METADATA  1
+#define RSS_APP_ACTION_LOAD_BLOCK  2
+#define RSS_APP_ACTION_LOAD_PACKET  3
+
+
+
 
 //Outgoing
-#define SLAVE_RECONNECT_SYNC_REQUEST  0x0B
+#define SLAVE_RECONNECT_SYNC_REQUEST  0x00
 #define SLAVE_DEVICE_CONNECTED  0x0C
 #define SLAVE_PING_RESPONSE  0x01
 #define SLAVE_TIME_RESPONSE  0x02
@@ -99,6 +109,7 @@
 
 -(IBAction)sendMessage:(Byte)type;
 -(IBAction)sendMessage:(Byte)type integerValue:(int)integerValue;
+-(IBAction)sendFormattedString:(Byte)stateId stateAction:(Byte)stateAction stateMessage:(NSString*)stateMessage;
 
 -(void) makeUrlRequest:(NSString*) url vars:(NSMutableDictionary*) dict;
 
@@ -110,6 +121,9 @@
 -(void) registerEventToServer;
 -(NSString *)stringWithUrl:(NSURL *)url;
 - (IBAction) sendData:(UInt8*) buf;
+- (IBAction) sendString;
+
+
 -(CBPeripheral *) getActivePeripheral;
 -(void) enableReadNotifications;
 -(NSMutableArray *) getPeripheralsArray;

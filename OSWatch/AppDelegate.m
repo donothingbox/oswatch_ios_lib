@@ -24,8 +24,10 @@
 @implementation AppDelegate
 
 @synthesize s_centralManagerSingleton;
-@synthesize bleConnection;
-@synthesize delegate;
+//@synthesize bleConnection;
+//@synthesize delegate;
+
+static Boolean willRestoreBLE = false;
 
 
 static CBCentralManager *s_centralManagerSingleton = nil;
@@ -53,47 +55,35 @@ static BLEConnectionDelegate *s_bleConnectionDelegateSingleton = nil;
     //May cause issues, but here to clear local notifs and avoid redundant spam
     [AppDelegate setBLEConnectionDelegateInstance: [[BLEConnectionDelegate alloc] init]];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bluetoothStatusReady:) name:@"COREBLUETOOTH_READY" object:nil];
-    delegate = [AppDelegate getBLEConnectionDelegateInstance];
-    /*[AppDelegate setCentralManagerInstance : [[CBCentralManager alloc] initWithDelegate:self queue:nil
-     options:@{ CBCentralManagerOptionRestoreIdentifierKey:
-     @"DoNothingBoxCentralManager" }]];*/
-    
+    s_bleConnectionDelegateSingleton = [AppDelegate getBLEConnectionDelegateInstance];
+
+    //this probably should be deleted, as it is never realistically called TODO
     if ([AppDelegate getCentralManagerInstance].state == CBCentralManagerStatePoweredOn) {
-        
-        NSLog(@"Scanning");
-        
         [[AppDelegate getCentralManagerInstance] scanForPeripheralsWithServices:[NSArray arrayWithObject:[CBUUID UUIDWithString:@BLE_SERVICE_UUID]] options:nil];
     }
-    
     
     // Override point for customization after application launch.
     NSArray *centralManagerIdentifiers = launchOptions[UIApplicationLaunchOptionsBluetoothCentralsKey];
     NSString *str = [NSString stringWithFormat: @"%@ %lu", @"Manager Restores: ", (unsigned long)centralManagerIdentifiers.count];
-    [self sendNotification:str];
+    if(centralManagerIdentifiers.count>0)
+       willRestoreBLE = true;
     
-    for(int i = 0;i<centralManagerIdentifiers.count;i++)
-    {
+    [self sendNotification:str];
+    for(int i = 0;i<centralManagerIdentifiers.count;i++){
         [self sendNotification:(NSString *)[centralManagerIdentifiers objectAtIndex:i]];
     }
     
     
-    [AppDelegate setCentralManagerInstance : [[CBCentralManager alloc] initWithDelegate:[AppDelegate getBLEConnectionDelegateInstance] queue:nil
+    //Ok, so this seems to be a "core" issue. Without the Que, the willRestoreState is not called properly, but with this, messages are delayed by 2  - 5 seconds if the app is currently open
+    dispatch_queue_t centralQueue = dispatch_queue_create("com.donothingbox", DISPATCH_QUEUE_SERIAL);
+    
+    [AppDelegate setCentralManagerInstance : [[CBCentralManager alloc] initWithDelegate:[AppDelegate getBLEConnectionDelegateInstance] queue:centralQueue
                                                                                 options:@{ CBCentralManagerOptionRestoreIdentifierKey:
                                                                                                @"DoNothingBoxCentralManager" }]];
-    /*
-     NSArray *identifiers = [NSArray arrayWithObjects:[[AppDelegate getBLEConnectionDelegateInstance] loadConnectedDevicesFromDisk].identifier, nil];
-     
-     NSArray *connected_list = [[AppDelegate getCentralManagerInstance] retrievePeripheralsWithIdentifiers:identifiers];
-     
-     for(int j = 0;j<connected_list.count;j++)
-     {
-     CBPeripheral *perf = [connected_list objectAtIndex:j];
-     
-     [self sendNotification:(NSString *) perf.identifier];
-     
-     NSLog(@"Finished loading %@", perf.identifier);
-     [[AppDelegate getCentralManagerInstance] connectPeripheral:perf options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
-     }*/
+
+    if(willRestoreBLE)
+        [[AppDelegate getBLEConnectionDelegateInstance] sendMessage:SLAVE_RECONNECT_SYNC_REQUEST]; //resend last transmission request
+    
     [[AppDelegate getCentralManagerInstance] scanForPeripheralsWithServices:[NSArray arrayWithObject:[CBUUID UUIDWithString:@BLE_SERVICE_UUID]] options:nil];
     return YES;
 }
@@ -145,7 +135,7 @@ static BLEConnectionDelegate *s_bleConnectionDelegateSingleton = nil;
 - (void)centralManager:(CBCentralManager *)central
       willRestoreState:(NSDictionary *)state {
     
-    //[self scheduleNotification:@"BLE->willRestoreState"];
+    [self sendNotification:@"AD->willRestoreState"];
     
     NSLog(@"CoreBluetooth triggered a restored State!!!");
     NSArray *peripheralsConnected = state[CBCentralManagerRestoredStatePeripheralsKey];
@@ -160,7 +150,7 @@ static BLEConnectionDelegate *s_bleConnectionDelegateSingleton = nil;
         NSLog(@"found perf");
         
         //[self.centralManager connectPeripheral:object];
-        [self sendNotification:@"reconnected peripheral"];
+        [self sendNotification:@"AD reconnected peripheral"];
     }
 }
 

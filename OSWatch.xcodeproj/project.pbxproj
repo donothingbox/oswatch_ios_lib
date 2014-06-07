@@ -7,9 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC095313191D8E1200DEDE7A /* DebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC095312191D8E1200DEDE7A /* DebugViewController.m */; };
+		DC095316191DF9B500DEDE7A /* RSSReader.m in Sources */ = {isa = PBXBuildFile; fileRef = DC095315191DF9B500DEDE7A /* RSSReader.m */; };
 		DC470D32191BF22700257514 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC470D2F191BF22700257514 /* Default-568h@2x.png */; };
 		DC470D33191BF22700257514 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = DC470D30191BF22700257514 /* Default.png */; };
 		DC470D34191BF22700257514 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC470D31191BF22700257514 /* Default@2x.png */; };
+		DC98705C1942881700B8390C /* RSSParserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DC98705B1942881700B8390C /* RSSParserObject.m */; };
 		DCA73382190341C50082CE3E /* AppIcon29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = DCA73372190341C50082CE3E /* AppIcon29x29.png */; };
 		DCA73383190341C50082CE3E /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DCA73373190341C50082CE3E /* AppIcon29x29@2x.png */; };
 		DCA73384190341C50082CE3E /* AppIcon40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = DCA73374190341C50082CE3E /* AppIcon40x40.png */; };
@@ -36,7 +39,7 @@
 		DCAFB9541901D4F5008B5A27 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DCAFB9521901D4F5008B5A27 /* InfoPlist.strings */; };
 		DCAFB9561901D4F5008B5A27 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB9551901D4F5008B5A27 /* main.m */; };
 		DCAFB95A1901D4F5008B5A27 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB9591901D4F5008B5A27 /* AppDelegate.m */; };
-		DCAFB95D1901D4F5008B5A27 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCAFB95B1901D4F5008B5A27 /* Main.storyboard */; };
+		DCAFB95D1901D4F5008B5A27 /* OSWatch_Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DCAFB95B1901D4F5008B5A27 /* OSWatch_Main.storyboard */; };
 		DCAFB9601901D4F5008B5A27 /* ConnectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB95F1901D4F5008B5A27 /* ConnectionViewController.m */; };
 		DCAFB9631901D4F5008B5A27 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB9621901D4F5008B5A27 /* SecondViewController.m */; };
 		DCAFB9651901D4F5008B5A27 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCAFB9641901D4F5008B5A27 /* Images.xcassets */; };
@@ -53,6 +56,7 @@
 		DCAFB9971901DA04008B5A27 /* BLEConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB9961901DA04008B5A27 /* BLEConnectionDelegate.m */; };
 		DCAFB99A1901DC01008B5A27 /* PairedDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB9991901DC01008B5A27 /* PairedDevice.m */; };
 		DCAFB9E11901EBAA008B5A27 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB9E01901EBAA008B5A27 /* FirstViewController.m */; };
+		DCB0B1E1191BFA4B00BD749C /* OSWatchWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB0B1DF191BFA4B00BD749C /* OSWatchWebViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,9 +70,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DC095311191D8E1200DEDE7A /* DebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
+		DC095312191D8E1200DEDE7A /* DebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugViewController.m; sourceTree = "<group>"; };
+		DC095314191DF9B500DEDE7A /* RSSReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSReader.h; sourceTree = "<group>"; };
+		DC095315191DF9B500DEDE7A /* RSSReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSReader.m; sourceTree = "<group>"; };
 		DC470D2F191BF22700257514 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		DC470D30191BF22700257514 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		DC470D31191BF22700257514 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		DC98705A1942881700B8390C /* RSSParserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSSParserObject.h; sourceTree = "<group>"; };
+		DC98705B1942881700B8390C /* RSSParserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSSParserObject.m; sourceTree = "<group>"; };
 		DCA73372190341C50082CE3E /* AppIcon29x29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon29x29.png; sourceTree = "<group>"; };
 		DCA73373190341C50082CE3E /* AppIcon29x29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon29x29@2x.png"; sourceTree = "<group>"; };
 		DCA73374190341C50082CE3E /* AppIcon40x40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon40x40.png; sourceTree = "<group>"; };
@@ -99,7 +109,7 @@
 		DCAFB9571901D4F5008B5A27 /* OSWatch-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OSWatch-Prefix.pch"; sourceTree = "<group>"; };
 		DCAFB9581901D4F5008B5A27 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DCAFB9591901D4F5008B5A27 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		DCAFB95C1901D4F5008B5A27 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		DCAFB95C1901D4F5008B5A27 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/OSWatch_Main.storyboard; sourceTree = "<group>"; };
 		DCAFB95E1901D4F5008B5A27 /* ConnectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConnectionViewController.h; sourceTree = "<group>"; };
 		DCAFB95F1901D4F5008B5A27 /* ConnectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConnectionViewController.m; sourceTree = "<group>"; };
 		DCAFB9611901D4F5008B5A27 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
@@ -121,6 +131,8 @@
 		DCAFB9991901DC01008B5A27 /* PairedDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PairedDevice.m; sourceTree = "<group>"; };
 		DCAFB9DF1901EBAA008B5A27 /* FirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
 		DCAFB9E01901EBAA008B5A27 /* FirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
+		DCB0B1DE191BFA4B00BD749C /* OSWatchWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSWatchWebViewController.h; sourceTree = SOURCE_ROOT; };
+		DCB0B1DF191BFA4B00BD749C /* OSWatchWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OSWatchWebViewController.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,6 +221,8 @@
 		DCAFB94F1901D4F5008B5A27 /* OSWatch */ = {
 			isa = PBXGroup;
 			children = (
+				DCB0B1DE191BFA4B00BD749C /* OSWatchWebViewController.h */,
+				DCB0B1DF191BFA4B00BD749C /* OSWatchWebViewController.m */,
 				DC470D2F191BF22700257514 /* Default-568h@2x.png */,
 				DC470D30191BF22700257514 /* Default.png */,
 				DC470D31191BF22700257514 /* Default@2x.png */,
@@ -218,7 +232,7 @@
 				DCAFB9961901DA04008B5A27 /* BLEConnectionDelegate.m */,
 				DCAFB9581901D4F5008B5A27 /* AppDelegate.h */,
 				DCAFB9591901D4F5008B5A27 /* AppDelegate.m */,
-				DCAFB95B1901D4F5008B5A27 /* Main.storyboard */,
+				DCAFB95B1901D4F5008B5A27 /* OSWatch_Main.storyboard */,
 				DCAFB95E1901D4F5008B5A27 /* ConnectionViewController.h */,
 				DCAFB95F1901D4F5008B5A27 /* ConnectionViewController.m */,
 				DCAFB9611901D4F5008B5A27 /* SecondViewController.h */,
@@ -227,6 +241,12 @@
 				DCAFB9501901D4F5008B5A27 /* Supporting Files */,
 				DCAFB9981901DC01008B5A27 /* PairedDevice.h */,
 				DCAFB9991901DC01008B5A27 /* PairedDevice.m */,
+				DC095311191D8E1200DEDE7A /* DebugViewController.h */,
+				DC095312191D8E1200DEDE7A /* DebugViewController.m */,
+				DC98705A1942881700B8390C /* RSSParserObject.h */,
+				DC98705B1942881700B8390C /* RSSParserObject.m */,
+				DC095314191DF9B500DEDE7A /* RSSReader.h */,
+				DC095315191DF9B500DEDE7A /* RSSReader.m */,
 			);
 			path = OSWatch;
 			sourceTree = "<group>";
@@ -385,7 +405,7 @@
 				DCA7338A190341C50082CE3E /* AppIcon60x60.png in Resources */,
 				DCA73391190341C50082CE3E /* iTunesArtwork@2x.png in Resources */,
 				DCA73390190341C50082CE3E /* iTunesArtwork.png in Resources */,
-				DCAFB95D1901D4F5008B5A27 /* Main.storyboard in Resources */,
+				DCAFB95D1901D4F5008B5A27 /* OSWatch_Main.storyboard in Resources */,
 				DCA73397190343070082CE3E /* AppIcon58x58.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -408,10 +428,14 @@
 				DCAFB9631901D4F5008B5A27 /* SecondViewController.m in Sources */,
 				DCAFB95A1901D4F5008B5A27 /* AppDelegate.m in Sources */,
 				DCAFB9E11901EBAA008B5A27 /* FirstViewController.m in Sources */,
+				DCB0B1E1191BFA4B00BD749C /* OSWatchWebViewController.m in Sources */,
+				DC98705C1942881700B8390C /* RSSParserObject.m in Sources */,
 				DCAFB9601901D4F5008B5A27 /* ConnectionViewController.m in Sources */,
+				DC095316191DF9B500DEDE7A /* RSSReader.m in Sources */,
 				DCAFB9971901DA04008B5A27 /* BLEConnectionDelegate.m in Sources */,
 				DCAFB99A1901DC01008B5A27 /* PairedDevice.m in Sources */,
 				DCAFB9561901D4F5008B5A27 /* main.m in Sources */,
+				DC095313191D8E1200DEDE7A /* DebugViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -442,12 +466,12 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		DCAFB95B1901D4F5008B5A27 /* Main.storyboard */ = {
+		DCAFB95B1901D4F5008B5A27 /* OSWatch_Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				DCAFB95C1901D4F5008B5A27 /* Base */,
 			);
-			name = Main.storyboard;
+			name = OSWatch_Main.storyboard;
 			sourceTree = "<group>";
 		};
 		DCAFB9741901D4F5008B5A27 /* InfoPlist.strings */ = {

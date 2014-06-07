@@ -74,6 +74,9 @@ UIView *greyOut;
 }
 
 - (void) bleMessageReceived:(NSNotification*)notification {
+    
+    NSLog(@"We got data!");
+
     NSArray  *theArray = [[notification userInfo] objectForKey:@"messageData"];
     NSInteger lengthByte = [theArray[0] integerValue];
     NSLog(@"MESSAGE LENGTH ->:%d", lengthByte);
@@ -81,9 +84,11 @@ UIView *greyOut;
         NSLog(@"BYTE:%@", theArray[i]);
     }
 
-    NSString *displayData = [NSString stringWithFormat: @"Length %d, [%@, %@]", lengthByte, theArray[1], theArray[2]];
-    statusFeedback.text = displayData;
-    [self displayBleMessage];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *displayData = [NSString stringWithFormat: @"Length %d, [%@, %@]", lengthByte, theArray[1], theArray[2]];
+        statusFeedback.text = displayData;
+        [self displayBleMessage];
+    });
 }
 
 - (void) deviceScanCompleted:(NSNotification*)notification{
@@ -129,7 +134,7 @@ UIView *greyOut;
     [btnConnect setEnabled:true];
     [btnConnect setTitle:@"connect" forState:UIControlStateNormal];
     [indConnecting stopAnimating];
-    NSLog(@"TableViewController->deviceScanReturnedNone");
+    NSLog(@"ConnectionViewController->deviceScanReturnedNone");
 }
 
 - (void) lostActiveBluetoothConnection:(NSNotification*)notification{
@@ -137,16 +142,20 @@ UIView *greyOut;
     dispUUID.text = @"----------------";
     
     statusFeedback.text = @"hmmm . . . not sure if you meant to do this or not, but for some strange reason we lost contact with the watch. Ignore this if this was an intentional action";
-    NSLog(@"TableViewController->Active Bluetooth Connection lost . . . ");
+    NSLog(@"ConnectionViewController->Active Bluetooth Connection lost . . . ");
     NSString *title     = @"Bluetooth Disconnected";
     NSString *message   = @"Please reconnect to sync data";
+    //Fixed since this is called from the seperate BLE thread
+    dispatch_async(dispatch_get_main_queue(), ^{
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alertView show];
+                [alertView show];
+    });
+    
 }
 
 //Enable Interfaces
 - (void) deviceConnected:(NSNotification*)notification{
-    NSLog(@"TableViewController->deviceConnected");
+    NSLog(@"ConnectionViewController->deviceConnected");
     [btnConnect setTitle:@"Disonnect" forState:UIControlStateNormal];
     lblAnalogIn.enabled = true;
     swDigitalOut.enabled = true;
@@ -167,6 +176,12 @@ UIView *greyOut;
 }
 
 -(void) deviceUpdatedRSSI:(NSNotification*) notification{
+    
+    //Temp hack to get display to change on recovery TODO restoreState
+    CFStringRef s = CFUUIDCreateString(NULL, [bleConnection getActivePeripheral].UUID);
+    dispUUID.text = (__bridge NSString *)(s);
+    [btnConnect setTitle:@"Disonnect" forState:UIControlStateNormal];
+    //end of hack
     NSNumber *rssi = [[notification userInfo] objectForKey:@"rssi"];
     lblRSSI.text = rssi.stringValue;
 }
@@ -227,6 +242,8 @@ UIView *greyOut;
 }
 
 -(void)addGreyOut{
+    if(greyOut)
+        [greyOut removeFromSuperview];
     CGRect fullScreenRect=[[UIScreen mainScreen] applicationFrame];
     greyOut=[[UIView alloc]initWithFrame:fullScreenRect];
     [greyOut setBackgroundColor:[[UIColor blackColor] colorWithAlphaComponent:0.5]];
@@ -263,10 +280,13 @@ UIView *greyOut;
 
 
 -(IBAction)sendCommandAOut:(id)sender{
-    UInt8 buf[6] = {0x0A, 0x00, 0x00 , 0x00, 0x00 , 0x00};
-    statusFeedback.text = @"{0x0A, 0x00, 0x00 , 0x00, 0x00 , 0x00}";
-    NSLog(@"CSending digital out");
-    [bleConnection sendData:(buf)];
+    
+    [bleConnection sendString];
+    
+    //UInt8 buf[6] = {0x0A, 0x00, 0x00 , 0x00, 0x00 , 0x00};
+    //statusFeedback.text = @"{0x0A, 0x00, 0x00 , 0x00, 0x00 , 0x00}";
+    //NSLog(@"CSending digital out");
+   // [bleConnection sendData:(buf)];
 }
 
 -(IBAction)sendCommandBOut:(id)sender{
@@ -334,6 +354,8 @@ UIView *greyOut;
 }
 
 - (void) playAudio{
+    
+    /*
     NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle]
                                          pathForResource:@"cardiac_arrest"
                                          ofType:@"wav"]];
@@ -349,7 +371,7 @@ UIView *greyOut;
         [_theAudio play];
         //[_theAudio setNumberOfLoops:INT32_MAX]; // for continuous play
         [_theAudio setNumberOfLoops:1]; // for single play
-    }
+    }*/
 }
 
 

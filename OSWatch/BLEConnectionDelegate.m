@@ -19,6 +19,7 @@
 #import "PairedDevice.h"
 #import "ConnectionViewController.h"
 #import "AppDelegate.h"
+#import "RSSParserObject.h"
 
 @implementation BLEConnectionDelegate
 @synthesize m_detectedDevices;
@@ -26,15 +27,32 @@
 @synthesize peripherals;
 @synthesize activePeripheral;
 
-static bool CACHE_CONNECTION = false;
+//Set this to false to manually select the BLE connection each time. If true, the UUID will be saved locally, and it will always try to reconnect to the device
+static bool CACHE_CONNECTION = true;
+
+//App will always try to reconnect to "memorized" peripheral
+static bool AUTO_RECONNECT = true;
+
 static bool isConnected = false;
 static bool done = false;
 static int rssi = 0;
 NSTimer *rssiTimer;
 
+
+static RSSParserObject *rssParserObject;
+
+static NSMutableArray *packetArray;
+static NSInteger packetCount;
+static NSInteger rssCount;
+
+
+
 -(BLEConnectionDelegate *)init{
     NSLog(@"BLEConnectionDelegate->init");
     self =[super init];
+    rssParserObject = [[RSSParserObject alloc] init];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(rssLoadComplete:) name:EVENT_RSS_LOAD_COMPLETE object:nil];
+
     return self;
 }
 
@@ -44,23 +62,22 @@ NSTimer *rssiTimer;
     [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_DEVICE_CONNECTED object:self];
     // Find the desired service. For the current setup, its the generic
     for (CBService *service in [[self activePeripheral] services]) {
-        //NSLog(@" Ser UUUID:  %@", service.UUID);
+        NSLog(@" Ser UUUID:  %@", service.UUID);
         if ([[service UUID] isEqual:[CBUUID UUIDWithString:@BLE_SERVICE_UUID]]) {
             // Find the characteristic
             for (CBCharacteristic *characteristic in [service characteristics]) {
                 //NSLog(@" Char UUUID: %@", [characteristic UUID]);
                 if ( [[characteristic UUID] isEqual:[CBUUID UUIDWithString:@BLE_CHAR_RX_UUID]]) {
                     //NSLog(@"setting notify value to true");
-                    // And START getting notifications from it
                     [self enableReadNotification:[self activePeripheral]];
                 }
             }
         }
-        // Schedule to read RSSI every 1 sec.
+        // Schedule to read RSSI every 1 sec
         self.rssiTimer = [NSTimer scheduledTimerWithTimeInterval:(float)1.0 target:self selector:@selector(readRSSITimer:) userInfo:nil repeats:YES];
     }
     // send connection message to Peripheral
-    [self sendMessage:SLAVE_DEVICE_CONNECTED];
+    //[self sendMessage:SLAVE_DEVICE_CONNECTED]; //Immediately sending a message on connection seems to create instabilities. TODO, add a delay
    }
 
 -(void) bleDidDisconnect{
@@ -169,6 +186,44 @@ NSTimer *rssiTimer;
             [self sendMessage:SLAVE_TIME_RESPONSE];
 
         }
+        else if (data[BYTE_EVENT_APP_ID] == RSS_STATE){
+            
+            if(data[BYTE_EVENT_APP_ACTION] == RSS_APP_ACTION_LOAD_METADATA){
+                NSLog(@"RSS LOAD RSS DETECTED");
+                [rssParserObject loadRSS];
+            }
+            
+                
+            else if(data[BYTE_EVENT_APP_ACTION] == RSS_APP_ACTION_LOAD_BLOCK){
+                NSLog(@"RSS LOAD BLOCK DETECTED: %d", data[3]);
+
+                NSMutableArray *feeds = [rssParserObject getFeeds];
+                [self sendRSSFeedLine:(NSString *)[feeds[[self byteToInteger:&data[3]]] objectForKey:@"title"]];
+                //[self sendRequestedPacket:[self byteToInteger:&data[3]]];
+            }
+
+            
+            
+            else if(data[BYTE_EVENT_APP_ACTION] == RSS_APP_ACTION_LOAD_PACKET){
+                
+                NSLog(@"RSS LOAD PACKET DETECTED: %d", data[3]);
+
+                [self sendRequestedPacket:[self byteToInteger:&data[3]]];
+
+                
+                
+            }
+
+
+            else
+            {
+            
+            
+            
+                [self sendFormattedString:0x03 stateAction:0x00 stateMessage:@"THis is a test"];
+            }
+            
+        }
         else{
             [self scheduleNotification:@"Incoming Data: UNKNOWN" soundName:@"cardiac_arrest.wav"];
         }
@@ -231,6 +286,7 @@ NSTimer *rssiTimer;
             for(int i = 0;i<self.peripherals.count;i++){
                 [m_detectedDevices addObject:[self.peripherals objectAtIndex:i]];
             }
+            
             NSDictionary *theInfo = [NSDictionary dictionaryWithObjectsAndKeys:self.peripherals,@"myArray", nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_DEVICE_SCAN_COMPLETE object:self userInfo:theInfo];
         }
@@ -308,6 +364,197 @@ NSTimer *rssiTimer;
     NSData *data = [[NSData alloc] initWithBytes:buf length:6];
     [self write:data];
 }
+
+/*
+-(IBAction)sendString{
+    NSData *bytesFromString = [@"This is a test mother fuckers" dataUsingEncoding:NSUTF8StringEncoding];
+    //NSData *data = [[NSData alloc] initWithBytes:buf length:6];
+    [self write:bytesFromString];
+}
+*/
+
+
+
+
+- (void) rssLoadComplete:(NSNotification*)notification {
+    NSLog(@"RSS Load Event Complete, ship it!");
+    rssCount = 10; //set manually for now
+    NSMutableArray *feeds = [rssParserObject getFeeds];
+    
+    [self sendRSSFeedMetadata];
+    
+    
+}
+
+
+
+
+
+
+-(IBAction)sendRequestedPacket:(NSInteger)packetID{
+    //NSLog(@"Requesting next packet: %ld", (long)packetID);
+    UInt8 buf[3] = {0x03, 0x03, 0x04};
+    NSMutableData *dataObj = [[NSMutableData alloc] initWithBytes:buf length:3];
+    [dataObj appendData:[packetArray[packetID] dataUsingEncoding:NSUTF8StringEncoding]];
+   // NSLog(@"Sending Next String: %@", packetArray[packetID]);
+   // NSLog(@"%@", dataObj);
+    //NSLog(@"%lu", (unsigned long)[dataObj length]);
+    [self write:dataObj];
+}
+
+//the inital batch of all the info
+-(IBAction)sendRSSFeedMetadata{
+    UInt8 buf[6] = {0x03, 0x01, 0x09, 0x01, 0x01, 0x01};
+    [self sendData:buf];
+}
+
+
+
+-(IBAction)sendRSSFeedLine:(NSString*)mySentence{
+    
+    UInt8 buf[3] = {0x03, 0x02, 0x04};
+    NSInteger totalCharLength = [mySentence length];
+    NSInteger numberOfPackets = ceil(totalCharLength/17);
+    
+    //NSLog(@"Total Char Length: %ld", (long)totalCharLength);
+    
+    //Reset packet array
+    packetArray = [NSMutableArray array];
+    packetCount = 0;
+    
+    
+    NSInteger currentPacket = 0;
+    
+    for(int i = 0;i<=numberOfPackets;i++) {
+
+        NSInteger startPoint = i*17;
+        NSInteger endPoint = 17;
+        if((endPoint+startPoint)>=totalCharLength)
+            endPoint = totalCharLength-startPoint;
+        //NSLog(@"End Point: %ld", (long)endPoint);
+        //NSLog(@"Length: %ld", (long)[mySentence length]);
+        NSRange packetRange = NSMakeRange(startPoint,endPoint);
+        NSString *packet = [mySentence substringWithRange:packetRange];
+        
+        while ([packet length]<17) {
+            packet = [packet stringByAppendingString:@" "];
+        }
+        //NSLog(@"SubString: %@", packet);
+        [packetArray addObject:packet];
+        packetCount++;
+    }
+    
+    
+    buf[2] = *[self integerToByte:packetCount];
+    //NSLog(@"Sending First String: %@", packetArray[0]);
+    
+    NSMutableData *dataObj = [[NSMutableData alloc] initWithBytes:buf length:3];
+    [dataObj appendData:[packetArray[0] dataUsingEncoding:NSUTF8StringEncoding]];
+    
+   // NSLog(@"%@", dataObj);
+    
+   // NSLog(@"%lu", (unsigned long)[dataObj length]);
+    [self write:dataObj];
+}
+
+
+
+
+
+
+-(IBAction)sendString{
+    
+    
+    UInt8 buf[3] = {0x03, 0x01, 0x04};
+    
+    NSString *mySentence = @"This is a test sentence, simply generated for debugging purposes. It will be loaded in multi-packets.";
+    NSInteger totalCharLength = [mySentence length];
+    NSInteger numberOfPackets = ceil(totalCharLength/17);
+    
+    NSLog(@"Total Char Length: %ld", (long)totalCharLength);
+
+    
+    //Reset packet array
+    packetArray = [NSMutableArray array];
+    packetCount = 0;
+    
+    
+    NSInteger currentPacket = 0;
+
+    for(int i = 0;i<=numberOfPackets;i++) {
+        
+        NSInteger startPoint = i*17;
+        NSInteger endPoint = 17;
+        if((endPoint+startPoint)>=totalCharLength)
+            endPoint = totalCharLength-startPoint;
+        NSLog(@"End Point: %ld", (long)endPoint);
+        NSLog(@"Length: %ld", (long)[mySentence length]);
+        NSRange packetRange = NSMakeRange(startPoint,endPoint);
+        NSString *packet = [mySentence substringWithRange:packetRange];
+        
+        while ([packet length]<17) {
+             packet = [packet stringByAppendingString:@" "];
+        }
+        NSLog(@"SubString: %@", packet);
+        [packetArray addObject:packet];
+        packetCount++;
+    }
+    
+
+    buf[2] = *[self integerToByte:packetCount];
+    NSLog(@"Sending First String: %@", packetArray[0]);
+
+    NSMutableData *dataObj = [[NSMutableData alloc] initWithBytes:buf length:3];
+    [dataObj appendData:[packetArray[0] dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    NSLog(@"%@", dataObj);
+
+    NSLog(@"%lu", (unsigned long)[dataObj length]);
+    
+    [self write:dataObj];
+}
+
+
+
+
+
+-(IBAction)sendFormattedString:(Byte)stateId stateAction:(Byte)stateAction stateMessage:(NSString*)stateMessage
+{
+    //First append the first 2 bytes of data
+    NSString *dataToTransmit = [NSString stringWithFormat:@"%hhu%hhu%@", stateId, stateAction, stateMessage];
+    //then encode to data
+    NSData* buf = [dataToTransmit dataUsingEncoding:NSUTF8StringEncoding];
+    //finally send the string, we'll parse out the sentence later.
+    
+    NSLog(@"Send String -> %@", stateMessage);
+    NSLog(@"Send buf -> %@", buf);
+    NSLog(@"Send Hex -> %@", [self stringToHex : dataToTransmit]);
+
+    
+    
+    
+    
+    NSData *data = [[NSData alloc] initWithBytes:(__bridge const void *)(buf) length:stateMessage.length+2];
+    [self write:data];
+}
+
+- (NSString *)stringToHex:(NSString *)string
+{
+    char *utf8 = [string UTF8String];
+    NSMutableString *hex = [NSMutableString string];
+    while ( *utf8 ) [hex appendFormat:@"%02X" , *utf8++ & 0x00FF];
+    
+    return [NSString stringWithFormat:@"%@", hex];
+}
+
+
+
+
+
+
+
+
+
 
 -(IBAction)sendMessage:(Byte)type integerValue:(int)integerValue{
     
@@ -406,6 +653,23 @@ NSTimer *rssiTimer;
     //[NSTimer scheduledTimerWithTimeInterval:(float)timeout target:self selector:@selector(scanTimer:) userInfo:nil repeats:NO];
     [NSTimer scheduledTimerWithTimeInterval:(float)timeout target:self selector:@selector(deviceScanCompleteTimer:) userInfo:nil repeats:NO];
 
+    
+    /*
+    else if([service.UUID isEqual:[CBUUID UUIDWithString:@"180A"]])
+    {
+        // Device Information Service - discover manufacture name characteristic
+        [peripheralManager discoverCharacteristics:[NSArray arrayWithObject:[CBUUID UUIDWithString:@"2A29"]] forService:service];
+    }
+    else if ( [service.UUID isEqual:[CBUUID UUIDWithString:CBUUIDGenericAccessProfileString]] )
+    {
+        // GAP (Generic Access Profile) - discover device name characteristic
+        [peripheralManager discoverCharacteristics:[NSArray arrayWithObject:[CBUUID UUIDWithString:CBUUIDDeviceNameString]]  forService:service];
+    }*/
+    
+    //Use this for Device Information Service . . .
+    //[cm scanForPeripheralsWithServices:[NSArray arrayWithObject:[CBUUID UUIDWithString:@"180A"]] options:nil];
+
+    
     //Use this to only scan for defined service advertizers
     //[cm scanForPeripheralsWithServices:[NSArray arrayWithObject:[CBUUID UUIDWithString:@BLE_SERVICE_UUID]] options:nil];
 
@@ -497,6 +761,8 @@ NSTimer *rssiTimer;
     //self.activePeripheral = [state[CBCentralManagerRestoredStatePeripheralsKey] firstItem];
     //self.activePeripheral.delegate = self;
     
+    
+    
     NSArray *peripheralsConnected = state[CBCentralManagerRestoredStatePeripheralsKey];
     
     NSString *str = [NSString stringWithFormat: @"%@ %lu", @"Saved Devices: ", (unsigned long)peripheralsConnected.count];
@@ -510,7 +776,7 @@ NSTimer *rssiTimer;
         [self scheduleNotification:@"reconnected peripheral" soundName:@""];
     }
     
-    
+    [self sendMessage:SLAVE_RECONNECT_SYNC_REQUEST];
 }
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central
@@ -529,7 +795,6 @@ NSTimer *rssiTimer;
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
 {
     [self scheduleNotification:@"Found Perf" soundName:@""];
-    
     if (!self.peripherals)
         self.peripherals = [[NSMutableArray alloc] initWithObjects:peripheral,nil];
     else
@@ -560,6 +825,20 @@ NSTimer *rssiTimer;
     NSDictionary *theInfo = [NSDictionary dictionaryWithObjectsAndKeys:peripherals,@"myArray", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"DID_DISCOVER_PERIPHERAL" object:self userInfo:theInfo];
     
+    
+    //Connect to peripheral if already Cached
+    
+    CBPeripheral *targetPerf;
+    PairedDevice *diskPerf = [self loadConnectedDevicesFromDisk];
+    if(diskPerf != NULL){
+        targetPerf = [self findPeripheralMatchingUUID:diskPerf.uuid];
+        NSLog(@"loaded previous match off of disk");
+        
+        if(targetPerf != NULL){
+            [self connectPeripheral:targetPerf];
+            NSLog(@"Reconnected to a Old Device");
+        }
+    }
     NSLog(@"didDiscoverPeripheral");
 }
 
@@ -585,10 +864,10 @@ NSTimer *rssiTimer;
 //Peripheral Delegate Methods
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error{
     if (!error){
-        NSLog(@"Characteristics of service with UUID : %@ found\n",[self CBUUIDToString:service.UUID]);
+        //NSLog(@"Characteristics of service with UUID : %@ found\n",[self CBUUIDToString:service.UUID]);
         for (int i=0; i < service.characteristics.count; i++){
                 CBCharacteristic *c = [service.characteristics objectAtIndex:i];
-                NSLog(@"Found characteristic %@\n",[ self CBUUIDToString:c.UUID]);
+                //NSLog(@"Found characteristic %@\n",[ self CBUUIDToString:c.UUID]);
             CBService *s = [peripheral.services objectAtIndex:(peripheral.services.count - 1)];
             if ([service.UUID isEqual:s.UUID]){
                 if (!done){
@@ -731,6 +1010,12 @@ NSTimer *rssiTimer;
     return val;
 }
 
+-(int) byteToInteger:(Byte *) byte{
+    long val = 0;
+    val |= *byte;
+    return val;
+}
+
 
 -(Byte *) integerToBytes:(int) int_to_convert {
     UInt8 buf[4] = {0x00, 0x00, 0x00 , 0x00};
@@ -738,6 +1023,12 @@ NSTimer *rssiTimer;
     buf[1] = int_to_convert >> 8;
     buf[2] = int_to_convert >> 16;
     buf[3] = int_to_convert >> 24;
+    return buf;
+}
+
+-(Byte *) integerToByte:(int) int_to_convert {
+    UInt8 buf[4] = {0x00};
+    buf[0] = int_to_convert;
     return buf;
 }
 
@@ -966,7 +1257,7 @@ NSTimer *rssiTimer;
 	// Set the action button
     localNotif.alertAction = @"Ok";
     
-    localNotif.soundName = soundName;
+    localNotif.soundName = @"";//soundName;
     localNotif.applicationIconBadgeNumber = 0;
     
 	// Specify custom data for the notification
@@ -984,6 +1275,14 @@ NSTimer *rssiTimer;
     [dict setValue:@"1" forKey:@"user"];
     [dict setValue:[NSNumber numberWithInt:timestamp] forKey:@"time"];
     [self makeUrlRequest: @"http://donothingbox.com/add_water_test.php" vars:dict];
+}
+
+-(NSString *) stringByStrippingHTML:(NSString*)targetString {
+    NSRange r;
+    NSString *s = [targetString copy];
+    while ((r = [s rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch]).location != NSNotFound)
+        s = [s stringByReplacingCharactersInRange:r withString:@""];
+    return s;
 }
 
 @end
