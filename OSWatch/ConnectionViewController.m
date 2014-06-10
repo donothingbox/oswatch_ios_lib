@@ -155,35 +155,52 @@ UIView *greyOut;
 
 //Enable Interfaces
 - (void) deviceConnected:(NSNotification*)notification{
-    NSLog(@"ConnectionViewController->deviceConnected");
-    [btnConnect setTitle:@"Disonnect" forState:UIControlStateNormal];
-    lblAnalogIn.enabled = true;
-    swDigitalOut.enabled = true;
-    swDigitalIn.enabled = true;
-    swAnalogIn.enabled = true;
-    sldPWM.enabled = true;
-    sldServo.enabled = true;
-
-    swDigitalOut.on = false;
-    swDigitalIn.on = false;
-    swAnalogIn.on = false;
-    sldPWM.value = 0;
-    sldServo.value = 0;
     
-    CFStringRef s = CFUUIDCreateString(NULL, [bleConnection getActivePeripheral].UUID);
-    dispUUID.text = (__bridge NSString *)(s);
-    statusFeedback.text = @"Device Connected!";
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"ConnectionViewController->deviceConnected");
+        [btnConnect setTitle:@"Disonnect" forState:UIControlStateNormal];
+        lblAnalogIn.enabled = true;
+        swDigitalOut.enabled = true;
+        swDigitalIn.enabled = true;
+        swAnalogIn.enabled = true;
+        sldPWM.enabled = true;
+        sldServo.enabled = true;
+
+        swDigitalOut.on = false;
+        swDigitalIn.on = false;
+        swAnalogIn.on = false;
+        sldPWM.value = 0;
+        sldServo.value = 0;
+    
+        CFStringRef s = CFUUIDCreateString(NULL, [bleConnection getActivePeripheral].UUID);
+        dispUUID.text = (__bridge NSString *)(s);
+        statusFeedback.text = @"Device Connected!";
+    });
 }
 
 -(void) deviceUpdatedRSSI:(NSNotification*) notification{
+
+    //Fixed since this is called from the seperate BLE thread
+    dispatch_async(dispatch_get_main_queue(), ^{
+
+        NSLog(@"ConnectionViewController->deviceUpdatedRSSI");
+        
+        //Temp hack to get display to change on recovery TODO restoreState
+        CFStringRef s = CFUUIDCreateString(NULL, [bleConnection getActivePeripheral].UUID);
+        dispUUID.text = (__bridge NSString *)(s);
+        [btnConnect setTitle:@"Disonnect" forState:UIControlStateNormal];
+        //end of hack
+        
+        NSNumber *rssi = [[notification userInfo] objectForKey:@"rssi"];
+        lblRSSI.text = rssi.stringValue;
+        if([bleConnection isConnected])
+        {
+            CFStringRef s = CFUUIDCreateString(NULL, [bleConnection getActivePeripheral].UUID);
+            dispUUID.text = (__bridge NSString *)(s);
+        }
+    });
     
-    //Temp hack to get display to change on recovery TODO restoreState
-    CFStringRef s = CFUUIDCreateString(NULL, [bleConnection getActivePeripheral].UUID);
-    dispUUID.text = (__bridge NSString *)(s);
-    [btnConnect setTitle:@"Disonnect" forState:UIControlStateNormal];
-    //end of hack
-    NSNumber *rssi = [[notification userInfo] objectForKey:@"rssi"];
-    lblRSSI.text = rssi.stringValue;
+
 }
 
 /*

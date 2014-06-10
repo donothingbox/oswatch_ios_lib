@@ -77,9 +77,14 @@ TimeState *m_timeState;
                 }
             }
         }
-        // Schedule to read RSSI every 1 sec
-        self.rssiTimer = [NSTimer scheduledTimerWithTimeInterval:(float)1.0 target:self selector:@selector(readRSSITimer:) userInfo:nil repeats:YES];
+
     }
+    // Schedule to read RSSI every 1 sec
+
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.rssiTimer = [NSTimer scheduledTimerWithTimeInterval:(float)1.0 target:self selector:@selector(readRSSITimer:) userInfo:nil repeats:YES];
+    });
     // send connection message to Peripheral
     //[self sendMessage:SLAVE_DEVICE_CONNECTED]; //Immediately sending a message on connection seems to create instabilities. TODO, add a delay
    }
@@ -95,6 +100,9 @@ TimeState *m_timeState;
 }
 
 -(void) bleDidUpdateRSSI:(NSNumber *) rssi{
+    
+    NSLog(@"LEConnectionDelegate->bleDidUpdateRSSI");
+
     NSDictionary *theInfo = [NSDictionary dictionaryWithObjectsAndKeys:rssi,@"rssi", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_DEVICE_UPDATED_RSSI object:self userInfo:theInfo];
 }
@@ -194,8 +202,19 @@ TimeState *m_timeState;
     }
 }
 
+
+
+
 -(void) readRSSITimer:(NSTimer *)timer{
+    
+    NSLog(@"BLEConnectionDelegate->readRSSITimer");
+
     [self readRSSI];
+}
+
+-(void) disconnectPeripheral:(CBPeripheral*)connectedPeripheral{
+    CBCentralManager *cm =[AppDelegate getCentralManagerInstance];
+    [cm cancelPeripheralConnection:connectedPeripheral];
 }
 
 
@@ -290,6 +309,31 @@ TimeState *m_timeState;
     [NSKeyedArchiver archiveRootObject:array toFile:fullFileName];
 }
 
+-(void) deleteConnectedDeviceFromDisk{
+    
+    //NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    //NSString *fullFileName = [NSString stringWithFormat:@"%@/ourArray", docDir];
+    //NSMutableArray *arrayFromDisk = [NSKeyedUnarchiver unarchiveObjectWithFile:fullFileName];
+    //PairedDevice *activeDevice = [arrayFromDisk objectAtIndex:0];
+    
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask,   YES);
+    NSString *docDir = [paths objectAtIndex:0];
+    NSString *fullFileName = [NSString stringWithFormat:@"%@/ourArray", docDir];
+    NSString *fullPath = [docDir stringByAppendingPathComponent:
+                          [NSString stringWithFormat:@"%@", fullFileName]];
+
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    if(![fileManager removeItemAtPath: fullFileName error:&error]) {
+        NSLog(@"Delete failed:%@", error);
+    } else {
+        NSLog(@"image removed: %@", fullFileName);
+    }
+    
+}
+
 -(PairedDevice *) loadConnectedDevicesFromDisk{
     if(CACHE_CONNECTION)
     {
@@ -322,154 +366,6 @@ TimeState *m_timeState;
     NSData *data = [[NSData alloc] initWithBytes:buf length:6];
     [self write:data];
 }
-
-/*
--(IBAction)sendString{
-    NSData *bytesFromString = [@"This is a test mother fuckers" dataUsingEncoding:NSUTF8StringEncoding];
-    //NSData *data = [[NSData alloc] initWithBytes:buf length:6];
-    [self write:bytesFromString];
-}
-*/
-
-
-
-/*
-- (void) rssLoadComplete:(NSNotification*)notification {
-    NSLog(@"RSS Load Event Complete, ship it!");
-    rssCount = 10; //set manually for now
-    NSMutableArray *feeds = [rssParserObject getFeeds];
-    
-    [self sendRSSFeedMetadata];
-    
-    
-}
-
-
--(IBAction)sendRequestedPacket:(NSInteger)packetID{
-    //NSLog(@"Requesting next packet: %ld", (long)packetID);
-    UInt8 buf[3] = {0x03, 0x03, 0x04};
-    NSMutableData *dataObj = [[NSMutableData alloc] initWithBytes:buf length:3];
-    [dataObj appendData:[packetArray[packetID] dataUsingEncoding:NSUTF8StringEncoding]];
-   // NSLog(@"Sending Next String: %@", packetArray[packetID]);
-   // NSLog(@"%@", dataObj);
-    //NSLog(@"%lu", (unsigned long)[dataObj length]);
-    [self write:dataObj];
-}
-
-//the inital batch of all the info
--(IBAction)sendRSSFeedMetadata{
-    UInt8 buf[6] = {0x03, 0x01, 0x09, 0x01, 0x01, 0x01};
-    [self sendData:buf];
-}
-
-
-
--(IBAction)sendRSSFeedLine:(NSString*)mySentence{
-    
-    UInt8 buf[3] = {0x03, 0x02, 0x04};
-    NSInteger totalCharLength = [mySentence length];
-    NSInteger numberOfPackets = ceil(totalCharLength/17);
-    
-    //NSLog(@"Total Char Length: %ld", (long)totalCharLength);
-    
-    //Reset packet array
-    packetArray = [NSMutableArray array];
-    packetCount = 0;
-    
-    
-    NSInteger currentPacket = 0;
-    
-    for(int i = 0;i<=numberOfPackets;i++) {
-
-        NSInteger startPoint = i*17;
-        NSInteger endPoint = 17;
-        if((endPoint+startPoint)>=totalCharLength)
-            endPoint = totalCharLength-startPoint;
-        //NSLog(@"End Point: %ld", (long)endPoint);
-        //NSLog(@"Length: %ld", (long)[mySentence length]);
-        NSRange packetRange = NSMakeRange(startPoint,endPoint);
-        NSString *packet = [mySentence substringWithRange:packetRange];
-        
-        while ([packet length]<17) {
-            packet = [packet stringByAppendingString:@" "];
-        }
-        //NSLog(@"SubString: %@", packet);
-        [packetArray addObject:packet];
-        packetCount++;
-    }
-    
-    
-    buf[2] = *[self integerToByte:packetCount];
-    //NSLog(@"Sending First String: %@", packetArray[0]);
-    
-    NSMutableData *dataObj = [[NSMutableData alloc] initWithBytes:buf length:3];
-    [dataObj appendData:[packetArray[0] dataUsingEncoding:NSUTF8StringEncoding]];
-    
-   // NSLog(@"%@", dataObj);
-    
-   // NSLog(@"%lu", (unsigned long)[dataObj length]);
-    [self write:dataObj];
-}
-
-
-
-
-
-
--(IBAction)sendString{
-    
-    
-    UInt8 buf[3] = {0x03, 0x01, 0x04};
-    
-    NSString *mySentence = @"This is a test sentence, simply generated for debugging purposes. It will be loaded in multi-packets.";
-    NSInteger totalCharLength = [mySentence length];
-    NSInteger numberOfPackets = ceil(totalCharLength/17);
-    
-    NSLog(@"Total Char Length: %ld", (long)totalCharLength);
-
-    
-    //Reset packet array
-    packetArray = [NSMutableArray array];
-    packetCount = 0;
-    
-    
-    NSInteger currentPacket = 0;
-
-    for(int i = 0;i<=numberOfPackets;i++) {
-        
-        NSInteger startPoint = i*17;
-        NSInteger endPoint = 17;
-        if((endPoint+startPoint)>=totalCharLength)
-            endPoint = totalCharLength-startPoint;
-        NSLog(@"End Point: %ld", (long)endPoint);
-        NSLog(@"Length: %ld", (long)[mySentence length]);
-        NSRange packetRange = NSMakeRange(startPoint,endPoint);
-        NSString *packet = [mySentence substringWithRange:packetRange];
-        
-        while ([packet length]<17) {
-             packet = [packet stringByAppendingString:@" "];
-        }
-        NSLog(@"SubString: %@", packet);
-        [packetArray addObject:packet];
-        packetCount++;
-    }
-    
-
-    buf[2] = *[self integerToByte:packetCount];
-    NSLog(@"Sending First String: %@", packetArray[0]);
-
-    NSMutableData *dataObj = [[NSMutableData alloc] initWithBytes:buf length:3];
-    [dataObj appendData:[packetArray[0] dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    NSLog(@"%@", dataObj);
-
-    NSLog(@"%lu", (unsigned long)[dataObj length]);
-    
-    [self write:dataObj];
-}
-
-*/
-
 
 
 -(IBAction)sendFormattedString:(Byte)stateId stateAction:(Byte)stateAction stateMessage:(NSString*)stateMessage
@@ -897,6 +793,10 @@ TimeState *m_timeState;
 }
 
 - (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error{
+    
+    NSLog(@"BLEConnectionDelegate->peripheralDidUpdateRSSI");
+
+    
     if (!isConnected)
         return;
     

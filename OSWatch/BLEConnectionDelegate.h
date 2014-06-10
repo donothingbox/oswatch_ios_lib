@@ -112,6 +112,8 @@
 
 -(void) makeUrlRequest:(NSString*) url vars:(NSMutableDictionary*) dict;
 
+-(void) disconnectPeripheral:(CBPeripheral*)connectedPeripheral;
+
 -(CBPeripheral *) findPeripheralMatchingUUID:(NSString *) uuidRef;
 -(void) connectionTimer:(NSTimer *)timer;
 -(void) saveConnectedDeviceToDisk;
@@ -135,6 +137,7 @@
 -(NSMutableArray *) getPeripheralsArray;
 -(IBAction)sendReconnectData:(id)sender;
 -(void) scanForPeripherals;
+-(void) deleteConnectedDeviceFromDisk;
 
 -(void) enableReadNotification:(CBPeripheral *)p;
 -(void) read;

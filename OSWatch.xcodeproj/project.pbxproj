@@ -57,6 +57,8 @@
 		DCAFB99A1901DC01008B5A27 /* PairedDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB9991901DC01008B5A27 /* PairedDevice.m */; };
 		DCAFB9E11901EBAA008B5A27 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCAFB9E01901EBAA008B5A27 /* FirstViewController.m */; };
 		DCB0B1E1191BFA4B00BD749C /* OSWatchWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB0B1DF191BFA4B00BD749C /* OSWatchWebViewController.m */; };
+		DCB415881946240A000D947D /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB415871946240A000D947D /* SettingsViewController.m */; };
+		DCB4158C19462B3A000D947D /* SettingsObject.m in Sources */ = {isa = PBXBuildFile; fileRef = DCB4158B19462B3A000D947D /* SettingsObject.m */; };
 		DCBAB6D31942D1830042E2AA /* BaseState.m in Sources */ = {isa = PBXBuildFile; fileRef = DCBAB6D21942D1830042E2AA /* BaseState.m */; };
 		DCBAB6D61942D1970042E2AA /* TimeState.m in Sources */ = {isa = PBXBuildFile; fileRef = DCBAB6D51942D1970042E2AA /* TimeState.m */; };
 		DCBAB6D91942DE910042E2AA /* RSSState.m in Sources */ = {isa = PBXBuildFile; fileRef = DCBAB6D81942DE910042E2AA /* RSSState.m */; };
@@ -136,6 +138,10 @@
 		DCAFB9E01901EBAA008B5A27 /* FirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
 		DCB0B1DE191BFA4B00BD749C /* OSWatchWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSWatchWebViewController.h; sourceTree = SOURCE_ROOT; };
 		DCB0B1DF191BFA4B00BD749C /* OSWatchWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OSWatchWebViewController.m; sourceTree = SOURCE_ROOT; };
+		DCB415861946240A000D947D /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		DCB415871946240A000D947D /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		DCB4158A19462B3A000D947D /* SettingsObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsObject.h; sourceTree = "<group>"; };
+		DCB4158B19462B3A000D947D /* SettingsObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsObject.m; sourceTree = "<group>"; };
 		DCBAB6D11942D1830042E2AA /* BaseState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseState.h; sourceTree = "<group>"; };
 		DCBAB6D21942D1830042E2AA /* BaseState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseState.m; sourceTree = "<group>"; };
 		DCBAB6D41942D1970042E2AA /* TimeState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeState.h; sourceTree = "<group>"; };
@@ -230,33 +236,26 @@
 		DCAFB94F1901D4F5008B5A27 /* OSWatch */ = {
 			isa = PBXGroup;
 			children = (
+				DCB415891946256D000D947D /* ViewControllers */,
 				DCBAB6C41942CF3D0042E2AA /* WatchApplications */,
-				DCB0B1DE191BFA4B00BD749C /* OSWatchWebViewController.h */,
-				DCB0B1DF191BFA4B00BD749C /* OSWatchWebViewController.m */,
 				DC470D2F191BF22700257514 /* Default-568h@2x.png */,
 				DC470D30191BF22700257514 /* Default.png */,
 				DC470D31191BF22700257514 /* Default@2x.png */,
-				DCAFB9DF1901EBAA008B5A27 /* FirstViewController.h */,
-				DCAFB9E01901EBAA008B5A27 /* FirstViewController.m */,
 				DCAFB9951901DA04008B5A27 /* BLEConnectionDelegate.h */,
 				DCAFB9961901DA04008B5A27 /* BLEConnectionDelegate.m */,
 				DCAFB9581901D4F5008B5A27 /* AppDelegate.h */,
 				DCAFB9591901D4F5008B5A27 /* AppDelegate.m */,
 				DCAFB95B1901D4F5008B5A27 /* OSWatch_Main.storyboard */,
-				DCAFB95E1901D4F5008B5A27 /* ConnectionViewController.h */,
-				DCAFB95F1901D4F5008B5A27 /* ConnectionViewController.m */,
-				DCAFB9611901D4F5008B5A27 /* SecondViewController.h */,
-				DCAFB9621901D4F5008B5A27 /* SecondViewController.m */,
 				DCAFB9641901D4F5008B5A27 /* Images.xcassets */,
 				DCAFB9501901D4F5008B5A27 /* Supporting Files */,
 				DCAFB9981901DC01008B5A27 /* PairedDevice.h */,
 				DCAFB9991901DC01008B5A27 /* PairedDevice.m */,
-				DC095311191D8E1200DEDE7A /* DebugViewController.h */,
-				DC095312191D8E1200DEDE7A /* DebugViewController.m */,
 				DC98705A1942881700B8390C /* RSSParserObject.h */,
 				DC98705B1942881700B8390C /* RSSParserObject.m */,
 				DC095314191DF9B500DEDE7A /* RSSReader.h */,
 				DC095315191DF9B500DEDE7A /* RSSReader.m */,
+				DCB4158A19462B3A000D947D /* SettingsObject.h */,
+				DCB4158B19462B3A000D947D /* SettingsObject.m */,
 			);
 			path = OSWatch;
 			sourceTree = "<group>";
@@ -301,6 +300,25 @@
 				DCAFB9881901D9BD008B5A27 /* ble_select_btn.png */,
 			);
 			name = assets;
+			sourceTree = "<group>";
+		};
+		DCB415891946256D000D947D /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				DCB0B1DE191BFA4B00BD749C /* OSWatchWebViewController.h */,
+				DCB0B1DF191BFA4B00BD749C /* OSWatchWebViewController.m */,
+				DCAFB9DF1901EBAA008B5A27 /* FirstViewController.h */,
+				DCAFB9E01901EBAA008B5A27 /* FirstViewController.m */,
+				DC095311191D8E1200DEDE7A /* DebugViewController.h */,
+				DC095312191D8E1200DEDE7A /* DebugViewController.m */,
+				DCB415861946240A000D947D /* SettingsViewController.h */,
+				DCB415871946240A000D947D /* SettingsViewController.m */,
+				DCAFB95E1901D4F5008B5A27 /* ConnectionViewController.h */,
+				DCAFB95F1901D4F5008B5A27 /* ConnectionViewController.m */,
+				DCAFB9611901D4F5008B5A27 /* SecondViewController.h */,
+				DCAFB9621901D4F5008B5A27 /* SecondViewController.m */,
+			);
+			name = ViewControllers;
 			sourceTree = "<group>";
 		};
 		DCBAB6C41942CF3D0042E2AA /* WatchApplications */ = {
@@ -451,6 +469,7 @@
 				DCAFB9631901D4F5008B5A27 /* SecondViewController.m in Sources */,
 				DCAFB95A1901D4F5008B5A27 /* AppDelegate.m in Sources */,
 				DCAFB9E11901EBAA008B5A27 /* FirstViewController.m in Sources */,
+				DCB4158C19462B3A000D947D /* SettingsObject.m in Sources */,
 				DCB0B1E1191BFA4B00BD749C /* OSWatchWebViewController.m in Sources */,
 				DCBAB6D61942D1970042E2AA /* TimeState.m in Sources */,
 				DC98705C1942881700B8390C /* RSSParserObject.m in Sources */,
@@ -460,6 +479,7 @@
 				DC095316191DF9B500DEDE7A /* RSSReader.m in Sources */,
 				DCAFB9971901DA04008B5A27 /* BLEConnectionDelegate.m in Sources */,
 				DCAFB99A1901DC01008B5A27 /* PairedDevice.m in Sources */,
+				DCB415881946240A000D947D /* SettingsViewController.m in Sources */,
 				DCAFB9561901D4F5008B5A27 /* main.m in Sources */,
 				DC095313191D8E1200DEDE7A /* DebugViewController.m in Sources */,
 			);
