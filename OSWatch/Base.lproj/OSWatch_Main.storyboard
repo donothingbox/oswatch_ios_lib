@@ -42,7 +42,7 @@
                             <constraint firstAttribute="centerY" secondItem="tZ3-Hv-Q7E" secondAttribute="centerY" id="xLM-BA-nZb"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Home" image="first" id="u1e-5L-l1D"/>
+                    <tabBarItem key="tabBarItem" title="Home" image="home_icon" id="u1e-5L-l1D"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qh2-T1-AhA" sceneMemberID="firstResponder"/>
             </objects>
@@ -61,7 +61,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Web" image="AppIcon29x29.png" id="boc-mx-Xe7"/>
+                    <tabBarItem key="tabBarItem" tag="3" title="Web" image="web_icon" id="boc-mx-Xe7"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IzK-vC-dnc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -112,7 +112,7 @@
                             <constraint firstAttribute="centerY" secondItem="DcM-Fx-MKR" secondAttribute="centerY" id="lHZ-e8-ii2"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Peripheral" image="second" id="Z7h-1E-pvt"/>
+                    <tabBarItem key="tabBarItem" tag="1" title="Peripheral" image="peripheral_icon" id="Z7h-1E-pvt"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3qq-4t-Ow8" sceneMemberID="firstResponder"/>
             </objects>
@@ -421,7 +421,7 @@
                             <outlet property="delegate" destination="4Ai-p2-Twu" id="Z0L-VL-G6t"/>
                         </connections>
                     </tableView>
-                    <tabBarItem key="tabBarItem" tag="3" title="Central" image="first" id="RKL-S1-16K"/>
+                    <tabBarItem key="tabBarItem" tag="2" title="Central" image="central_icon" id="RKL-S1-16K"/>
                     <navigationItem key="navigationItem" id="5oI-vO-9e2"/>
                     <connections>
                         <outlet property="btnCommandA" destination="dEF-xr-BzY" id="q63-Yj-gfv"/>
@@ -581,7 +581,7 @@
                             <outlet property="delegate" destination="fMd-MC-Dqh" id="grr-49-LsN"/>
                         </connections>
                     </tableView>
-                    <tabBarItem key="tabBarItem" tag="3" title="Central" image="first" id="olS-eq-Uh0"/>
+                    <tabBarItem key="tabBarItem" tag="4" title="Central" image="settings_icon" id="olS-eq-Uh0"/>
                     <navigationItem key="navigationItem" id="reH-Vc-2cZ"/>
                     <connections>
                         <outlet property="btnCommandA" destination="Nly-Ja-Dv9" id="CYw-6k-zdT"/>
@@ -596,9 +596,11 @@
         </scene>
     </scenes>
     <resources>
-        <image name="AppIcon29x29.png" width="29" height="29"/>
-        <image name="first" width="30" height="30"/>
-        <image name="second" width="30" height="30"/>
+        <image name="central_icon" width="30" height="30"/>
+        <image name="home_icon" width="30" height="30"/>
+        <image name="peripheral_icon" width="30" height="30"/>
+        <image name="settings_icon" width="30" height="30"/>
+        <image name="web_icon" width="30" height="30"/>
     </resources>
     <color key="tintColor" red="0.20654296875" green="0.20654296875" blue="0.20654296875" alpha="1" colorSpace="calibratedRGB"/>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
