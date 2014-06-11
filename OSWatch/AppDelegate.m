@@ -17,6 +17,7 @@
 
 #import "AppDelegate.h"
 #import "BLEConnectionDelegate.h"
+#import "SettingsObject.h"
 
 @interface AppDelegate ()
 @end
@@ -185,6 +186,11 @@ static BLEConnectionDelegate *s_bleConnectionDelegateSingleton = nil;
 
 - (IBAction) sendNotification:(NSString*) body {
     
+    SettingsObject *settingsObject = [SettingsObject getSettingsObjectSingleton];
+    if(settingsObject.notificationsEnabled)
+    {
+    
+    
     NSCalendar *calendar = [NSCalendar autoupdatingCurrentCalendar];
     
     // Get the current date
@@ -226,6 +232,11 @@ static BLEConnectionDelegate *s_bleConnectionDelegateSingleton = nil;
     
 	// Schedule the notification
     [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
+    }
+    else
+    {
+        NSLog(@"BLEConnectionDelegate - notificaions disabled");
+    }
 }
 
 

@@ -21,10 +21,15 @@
 @interface SettingsObject : NSObject {
     BOOL notificationsEnabled;
     BOOL reconnectionsEnabled;
+    SettingsObject *s_settingsObjectSingleton;
+
 
 }
 
 @property (nonatomic) BOOL notificationsEnabled;
 @property (nonatomic) BOOL reconnectionsEnabled;
+
++(SettingsObject *)getSettingsObjectSingleton;
++(void)setSettingsObjectSingleton:(SettingsObject*) settingsObject;
 
 @end

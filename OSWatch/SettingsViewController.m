@@ -43,7 +43,17 @@ static bool CACHE_CONNECTION = true;
     [super viewDidLoad];
     
     bleConnection = [AppDelegate getBLEConnectionDelegateInstance];
-    SettingsObject *settingsObject = [self loadSettingsStateFromDisk];
+    
+    
+    //SettingsObject *settingsObject = [self loadSettingsStateFromDisk];
+    SettingsObject *settingsObject = [SettingsObject getSettingsObjectSingleton];
+    notificationsEnabled.on = settingsObject.notificationsEnabled;
+    reconnectEnabled.on = settingsObject.reconnectionsEnabled;
+    notificationsEnabled.enabled = true;
+    reconnectEnabled.enabled = true;
+
+
+    /*
     if(settingsObject != NULL){
         NSLog(@"Loaded Settings State");
         notificationsEnabled.on = settingsObject.notificationsEnabled;
@@ -59,7 +69,7 @@ static bool CACHE_CONNECTION = true;
         notificationsEnabled.enabled = true;
         reconnectEnabled.enabled = true;
         [self saveSettingsState];
-    }
+    }*/
     
     if([bleConnection isConnected])
     {
@@ -70,19 +80,21 @@ static bool CACHE_CONNECTION = true;
    }
 
 -(void) saveSettingsState{
-    SettingsObject *settingsObject = [[SettingsObject alloc] init];
+    SettingsObject *settingsObject = [SettingsObject getSettingsObjectSingleton];
     settingsObject.reconnectionsEnabled = reconnectEnabled.on;
     settingsObject.notificationsEnabled = notificationsEnabled.on;
     NSLog(@"Saving State");
     NSLog(@"Notification is: %d", settingsObject.notificationsEnabled);
     NSLog(@"Reconnection is: %d", settingsObject.reconnectionsEnabled);
-
     
+    [SettingsObject setSettingsObjectSingleton:settingsObject];
+
+    /*
     NSArray *array = [[NSArray alloc] initWithObjects:settingsObject, nil];
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *docDir = [paths objectAtIndex:0];
     NSString *fullFileName = [NSString stringWithFormat:@"%@/settingsData", docDir];
-    [NSKeyedArchiver archiveRootObject:array toFile:fullFileName];
+    [NSKeyedArchiver archiveRootObject:array toFile:fullFileName];*/
 }
 
 -(SettingsObject *) loadSettingsStateFromDisk{
@@ -112,6 +124,7 @@ static bool CACHE_CONNECTION = true;
         NSLog(@"Notification is OFF");
     }
     [self saveSettingsState];
+ 
 }
 
 - (IBAction)changeReconnectState:(id)sender{

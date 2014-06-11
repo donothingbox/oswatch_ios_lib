@@ -19,7 +19,13 @@
 
 @implementation SettingsObject
 
+static bool CACHE_CONNECTION = true;
+
+
 @synthesize notificationsEnabled, reconnectionsEnabled;
+
+static SettingsObject *s_settingsObjectSingleton = nil;
+
 
 - (void)encodeWithCoder:(NSCoder *)encoder {
     [encoder encodeBool:notificationsEnabled forKey:@"notificationsEnabled"];
@@ -33,5 +39,74 @@
     }
     return self;
 }
+
++(SettingsObject *)getSettingsObjectSingleton {
+    
+    if(s_settingsObjectSingleton)
+        return s_settingsObjectSingleton;
+    
+    SettingsObject *settingsObject = [SettingsObject loadSettingsStateFromDisk];
+    if(settingsObject != NULL)
+    {
+        s_settingsObjectSingleton = settingsObject;
+        return settingsObject;
+    }
+    else
+    {
+        [SettingsObject createSettingsObjectInstance];
+        SettingsObject *settingsObject = [SettingsObject loadSettingsStateFromDisk];
+        s_settingsObjectSingleton = settingsObject;
+        return settingsObject;
+    }
+}
+
++(void)setSettingsObjectSingleton:(SettingsObject*) settingsObject{
+    NSLog(@"Saving State");
+    NSLog(@"Notification is: %d", settingsObject.notificationsEnabled);
+    NSLog(@"Reconnection is: %d", settingsObject.reconnectionsEnabled);
+    NSArray *array = [[NSArray alloc] initWithObjects:settingsObject, nil];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *docDir = [paths objectAtIndex:0];
+    NSString *fullFileName = [NSString stringWithFormat:@"%@/settingsData", docDir];
+    [NSKeyedArchiver archiveRootObject:array toFile:fullFileName];
+    s_settingsObjectSingleton = settingsObject;
+}
+
+
+
++(SettingsObject *) loadSettingsStateFromDisk{
+    if(CACHE_CONNECTION)
+    {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *docDir = [paths objectAtIndex:0];
+        NSString *fullFileName = [NSString stringWithFormat:@"%@/settingsData", docDir];
+        NSMutableArray *arrayFromDisk = [NSKeyedUnarchiver unarchiveObjectWithFile:fullFileName];
+        SettingsObject *settingsObject = [arrayFromDisk objectAtIndex:0];
+        NSLog(@"Loading State");
+        NSLog(@"Notification is: %d", settingsObject.notificationsEnabled);
+        NSLog(@"Reconnection is: %d", settingsObject.reconnectionsEnabled);
+        return settingsObject;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
++(void) createSettingsObjectInstance{
+    SettingsObject *settingsObject = [[SettingsObject alloc] init];
+    settingsObject.reconnectionsEnabled = true;
+    settingsObject.notificationsEnabled = true;
+    NSLog(@"Saving State");
+    NSLog(@"Notification is: %d", settingsObject.notificationsEnabled);
+    NSLog(@"Reconnection is: %d", settingsObject.reconnectionsEnabled);
+    NSArray *array = [[NSArray alloc] initWithObjects:settingsObject, nil];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *docDir = [paths objectAtIndex:0];
+    NSString *fullFileName = [NSString stringWithFormat:@"%@/settingsData", docDir];
+    [NSKeyedArchiver archiveRootObject:array toFile:fullFileName];
+}
+
+
 
 @end

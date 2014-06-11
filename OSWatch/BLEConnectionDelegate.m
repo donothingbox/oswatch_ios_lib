@@ -22,6 +22,7 @@
 #import "RSSParserObject.h"
 #import "TimeState.h"
 #import "RSSState.h"
+#import "SettingsObject.h"
 
 @implementation BLEConnectionDelegate
 @synthesize m_detectedDevices;
@@ -95,13 +96,16 @@ TimeState *m_timeState;
     NSLog(@"BLEConnectionDelegate->Disconnected");
     [self.rssiTimer invalidate];
     self.rssiTimer = nil;
-    [self huntForPeripherals];
+    
+    SettingsObject *settingsObject = [SettingsObject getSettingsObjectSingleton];
+    if(settingsObject.reconnectionsEnabled)
+        [self huntForPeripherals];
 
 }
 
 -(void) bleDidUpdateRSSI:(NSNumber *) rssi{
     
-    NSLog(@"LEConnectionDelegate->bleDidUpdateRSSI");
+    //NSLog(@"BLEConnectionDelegate->bleDidUpdateRSSI");
 
     NSDictionary *theInfo = [NSDictionary dictionaryWithObjectsAndKeys:rssi,@"rssi", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:EVENT_DEVICE_UPDATED_RSSI object:self userInfo:theInfo];
@@ -118,16 +122,20 @@ TimeState *m_timeState;
         return;
     }
     
-    //Look at the perfs discovered and check to see if any are previously connected
-    PairedDevice *diskPerf = [self loadConnectedDevicesFromDisk];
-    CBPeripheral *targetPerf;
-    if(diskPerf != NULL){
-        targetPerf = [self findPeripheralMatchingUUID:diskPerf.uuid];
-        NSLog(@"loaded previous match off of disk");
+    SettingsObject *settingsObject = [SettingsObject getSettingsObjectSingleton];
+    if(settingsObject.reconnectionsEnabled)
+    {
+        //Look at the perfs discovered and check to see if any are previously connected
+        PairedDevice *diskPerf = [self loadConnectedDevicesFromDisk];
+        CBPeripheral *targetPerf;
+        if(diskPerf != NULL){
+            targetPerf = [self findPeripheralMatchingUUID:diskPerf.uuid];
+            NSLog(@"loaded previous match off of disk");
         
-        if(targetPerf != NULL){
-            [self connectPeripheral:targetPerf];
-            NSLog(@"Reconnected to a Old Device");
+            if(targetPerf != NULL){
+                [self connectPeripheral:targetPerf];
+                NSLog(@"Reconnected to a Old Device");
+            }
         }
     }
 }
@@ -206,9 +214,7 @@ TimeState *m_timeState;
 
 
 -(void) readRSSITimer:(NSTimer *)timer{
-    
-    NSLog(@"BLEConnectionDelegate->readRSSITimer");
-
+    //NSLog(@"BLEConnectionDelegate->readRSSITimer");
     [self readRSSI];
 }
 
@@ -793,10 +799,7 @@ TimeState *m_timeState;
 }
 
 - (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error{
-    
-    NSLog(@"BLEConnectionDelegate->peripheralDidUpdateRSSI");
-
-    
+    //NSLog(@"BLEConnectionDelegate->peripheralDidUpdateRSSI");
     if (!isConnected)
         return;
     
@@ -1081,6 +1084,10 @@ TimeState *m_timeState;
 
 
 - (IBAction) scheduleNotification:(NSString*) body soundName:(NSString*) soundName{
+    
+    SettingsObject *settingsObject = [SettingsObject getSettingsObjectSingleton];
+    if(settingsObject.notificationsEnabled)
+    {
     NSCalendar *calendar = [NSCalendar autoupdatingCurrentCalendar];
     // Get the current date
     NSDate *pickerDate = [NSDate date];
@@ -1120,6 +1127,11 @@ TimeState *m_timeState;
 	// Schedule the notification
     //[[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
     [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
+    }
+    else
+    {
+        NSLog(@"BLEConnectionDelegate - notificaions disabled");
+    }
 }
 
 -(void) registerEventToServer{

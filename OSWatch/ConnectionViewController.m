@@ -182,9 +182,7 @@ UIView *greyOut;
 
     //Fixed since this is called from the seperate BLE thread
     dispatch_async(dispatch_get_main_queue(), ^{
-
-        NSLog(@"ConnectionViewController->deviceUpdatedRSSI");
-        
+        //NSLog(@"ConnectionViewController->deviceUpdatedRSSI");
         //Temp hack to get display to change on recovery TODO restoreState
         CFStringRef s = CFUUIDCreateString(NULL, [bleConnection getActivePeripheral].UUID);
         dispUUID.text = (__bridge NSString *)(s);
