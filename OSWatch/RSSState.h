@@ -18,6 +18,15 @@
 #import "BaseState.h"
 #import "BLEConnectionDelegate.h"
 
+#define RSS_APP_ACTION_LOAD_METADATA  1
+#define RSS_APP_ACTION_LOAD_BLOCK  2
+#define RSS_APP_ACTION_LOAD_PACKET  3
+#define RSS_APP_ACTION_LOAD_DETAIL_METADATA  4
+#define RSS_APP_ACTION_LOAD_DETAIL_TITLE_BLOCK  5
+#define RSS_APP_ACTION_LOAD_DETAIL_DESCRIPTION_BLOCK  6
+#define RSS_APP_ACTION_LOAD_DETAIL_PACKET  7
+
+
 @interface RSSState : BaseState
 
 -(void)processIncomingData:(unsigned char *) data length:(int) length;

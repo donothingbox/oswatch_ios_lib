@@ -203,7 +203,7 @@ TimeState *m_timeState;
                 [[RSSState getRSSState] processIncomingData:data length:length];
                 break;
             default:
-                //This is an Error and should never happen
+                NSLog(@"Unkonwn / Corrupted data received . . . ");
                 [self scheduleNotification:@"Incoming Data: UNKNOWN" soundName:@"cardiac_arrest.wav"];
                 break;
         }

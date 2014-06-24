@@ -23,6 +23,7 @@
     NSMutableArray *feeds;
     NSMutableDictionary *item;
     NSMutableString *title;
+    NSMutableString *description;
     NSMutableString *link;
     NSString *element;
 }

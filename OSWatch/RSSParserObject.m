@@ -38,7 +38,9 @@
     if ([element isEqualToString:@"item"]) {
         item    = [[NSMutableDictionary alloc] init];
         title   = [[NSMutableString alloc] init];
+        description   = [[NSMutableString alloc] init];
         link    = [[NSMutableString alloc] init];
+        
     }
     
 }
@@ -49,16 +51,18 @@
         
         [item setObject:title forKey:@"title"];
         [item setObject:link forKey:@"link"];
+        [item setObject:description forKey:@"description"];
         [feeds addObject:[item copy]];
     }
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
-    
     if ([element isEqualToString:@"title"]) {
         [title appendString:string];
     } else if ([element isEqualToString:@"link"]) {
         [link appendString:string];
+    } else if ([element isEqualToString:@"description"]) {
+        [description appendString:[self stringByStrippingHTML:string]];
     }
 }
 
@@ -68,6 +72,30 @@
     for(int i = 0;i<feeds.count;i++){
         //NSLog(@"%@" ,[feeds[i] objectForKey:@"title"]);
     }
+}
+
+
+-(NSString *) stringByStrippingHTML:(NSString *) s {
+    
+    NSRange r;
+    //NSString *returnStr = [[NSMutableString alloc] init];
+    NSString *sparseString = [s copy];
+
+    while ((r = [sparseString rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch]).location != NSNotFound)
+        sparseString = [sparseString stringByReplacingCharactersInRange:r withString:@""];
+    return sparseString;
+    /*
+    NSRange r;
+    NSString *returnValue = [[NSMutableString alloc] init];
+    
+    while ((r = [s rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch]).location != NSNotFound)
+        returnValue = [s stringByReplacingCharactersInRange:r withString:s];
+    
+    
+    NSString *htmlString = @"<html>bla bla</html>";
+    NSString *stringWithoutHTML = [hstmString stringByReplacingOccurrencesOfRegex:myregex withString:@""];*/
+    
+    //return returnValue;
 }
 
 -(NSMutableArray*)getFeeds{
